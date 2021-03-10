@@ -4,33 +4,59 @@
 //
 //  Created by cpsc on 3/9/21.
 // removing certain characters from a string
-// Reference: https://www.tutorialspoint.com/how-to-remove-certain-characters-from-a-string-in-cplusplus
+// https://www.tutorialspoint.com/how-to-remove-certain-characters-from-a-string-in-cplusplus
+// mutex
+// https://www.bogotobogo.com/cplusplus/multithreading_pthread.php
+// fix void
+// https://stackoverflow.com/questions/22751762/how-to-make-compiler-not-show-int-to-void-pointer-cast-warnings
 
 #include <iostream>
 #include <pthread.h>
 #include <fstream>
 #include <cstring>
-#include <stdio.h>      /* printf, fgets */
 #include <stdlib.h>     /* atoi */
+#include <map>
 using namespace std;
+// NOTE: may need later?
+// mutex lock - allows us to aquire one thread at a time, synchronizing data
+// pthread_mutex_t myMutex; // will use this later
 int sudokuArray[9][9] = {};
 int countRow = 0;
+
+void checkRow(int row)
+{
+    int curr_row = row;
+    map<int, string> isOccupied;
+    for (int col = 0; col < 9; col++)
+     {
+         // check if the key exists
+            if(isOccupied.find(sudokuArray[curr_row][col]) == isOccupied.end())
+            {
+                cout << "Not Occupied" << endl;
+                cout << "Adding to map" << endl;
+                isOccupied[sudokuArray[curr_row][col]] = "occupied";
+            }
+            else
+            {
+                cout << "Occupied" << endl;
+                // Specs: wants the row and colum to start at 1
+                cout << "row: " << curr_row + 1 << " column: " << col + 1 << " value: " ;
+                cout << sudokuArray[curr_row][col] << endl;
+            }
+
+     }
+}
 // Check the row
 void *checkRows(void *tRowID)
 {
-    // call checkRow
-    // checkRow()
-    return NULL;
-}
-void checkRow()
-{
-    // only checks one row and call it in a loop inside the thread function
-    // check  duplicates
-    // bool vector or array or a count. So if we get a
-    //
+    int rowLine = 0;
     
-    // 2,3,2 we have a 3 in row 1 and a 2 in row 3
-    // create a data strucutre
+    while (rowLine < 9)
+    {
+        checkRow(rowLine);
+        rowLine++;
+    }
+    return NULL;
 }
 void *checkColumns(void *tRowID)
 {
@@ -46,11 +72,12 @@ void myArray(string line)
 {
     for(int col = 0; col < line.length(); col++)
     {
-        // assign and convert character to number 
+        // assign and convert character to number
         sudokuArray[countRow][col] = line[col] - 48;
     }
     countRow++;
-    cout << "row: " << countRow << endl;
+    //Diag:
+    //cout << "row: " << countRow << endl;
 }
 // prints the array
 void printmyArray()
@@ -79,7 +106,6 @@ void ReadFile(string fileName)
         cout << "could not open file"<< endl;
     }
     else{
-        cout << "HERE" << endl;
         while(!fileInput.eof())
         {
             fileInput >> line;
@@ -97,18 +123,30 @@ void ReadFile(string fileName)
 
 int main(int argc, const char * argv[]) {
     string fileName = "";
-    fileName = "Testfile1.txt";
-    // onFS - object of fstream to write to file
-    
-    // STEP 1: Create threads
-    pthread_t row;
-    pthread_t column;
-    pthread_t grid;
-    
+    fileName = "Testfile2.txt";
+
+    pthread_t rowThread;
+    pthread_t columnThread;
+    pthread_t gridThread;
     
     cout << "Welcome to SVP" << endl;
     cout << "Please enter the file: " << fileName << endl;
     ReadFile(fileName);
+    
+    int rowID = 1;
+    int colID = 2;
+    int gridID = 3;
+    
+    pthread_create(&rowThread, NULL, checkRows, (void *)(size_t)rowID);
+    pthread_create(&columnThread, NULL, checkColumns, (void *)(size_t)colID);
+    pthread_create(&gridThread, NULL, checkGrids, (void *)(size_t)gridID);
+    
+    pthread_join(rowThread, NULL);
+    pthread_join(columnThread, NULL);
+    pthread_join(gridThread, NULL);
+    
+    
+    // STEP 1: Create threads
     
     // STEP 2: Read from the test file
                // call ReadFile()
