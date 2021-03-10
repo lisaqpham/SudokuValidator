@@ -3,15 +3,17 @@
 //  OS_proj2
 //
 //  Created by cpsc on 3/9/21.
-//
-// Reference: https://www.tutorialspoint.com/read-file-line-by-line-using-cplusplus
+// removing certain characters from a string
+// Reference: https://www.tutorialspoint.com/how-to-remove-certain-characters-from-a-string-in-cplusplus
 
 #include <iostream>
 #include <pthread.h>
 #include <fstream>
 #include <cstring>
+#include <stdio.h>      /* printf, fgets */
+#include <stdlib.h>     /* atoi */
 using namespace std;
-char sudokuArray[30][30] = {};
+int sudokuArray[9][9] = {};
 int countRow = 0;
 // Check the row
 void *checkRows(void *tRowID)
@@ -44,7 +46,8 @@ void myArray(string line)
 {
     for(int col = 0; col < line.length(); col++)
     {
-        sudokuArray[countRow][col] = line[col];
+        // assign and convert character to number 
+        sudokuArray[countRow][col] = line[col] - 48;
     }
     countRow++;
     cout << "row: " << countRow << endl;
@@ -70,8 +73,6 @@ void ReadFile(string fileName)
     
     ifstream fileInput;
     string line = "";
-    int row = 0;
-    int col = 0;
     fileInput.open(fileName);
     if(!fileInput.is_open())
     {
@@ -83,16 +84,15 @@ void ReadFile(string fileName)
         {
             fileInput >> line;
             // Diag:
-            //cout << "line " << line << endl;
+              //cout << "line " << line << endl;
+            // Removes ',' from the string
             line.erase(remove(line.begin(), line.end(), ','), line.end());
+            // Passes string that excludes ','
             myArray(line);
             
-           
         }
     }
     printmyArray();
-        
-    
 }
 
 int main(int argc, const char * argv[]) {
