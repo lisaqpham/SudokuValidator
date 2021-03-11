@@ -1,15 +1,17 @@
 # Sudoku Validator
 
-The Sudoku Validator Program (SVP) shall validate a 9x9 completed puzzle for correctness.
+The **Sudoku Validator Program (SVP)** shall validate a 9x9 completed puzzle for correctness.
 
-Each column and row contains all of the digits 1-9 once. Each of the nine 3x3 sub-grids contains all of the digits 1-9 once.
+Each column and row contains all of the digits 1-9 once.
+
+Each of the nine 3x3 sub-grids contains all of the digits 1-9 once.
 
 The **sudoku.cpp** program:
 * Accepts as input an ASCII .txt file with the elements separated by commas and structured as a 9x9 table
 * The programs runs 3 threads to check the rows, columns, and sub-grids for errors
 * Returns the row, column, and value at which an error is detected
 * Identifies and returns the correct solution for all detected errors
-* Feedback/labels are provided throughout the program through print() to better explain the execution
+* Feedback/labels are provided throughout the program through print statements to better explain the execution
 
 ## Identifying Information
 
