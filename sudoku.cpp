@@ -1,14 +1,10 @@
+// Sudoku Validator Program
+// The Sudoku Validator Program (SVP) shall validate a 9x9 completed puzzle for correctness.
 //
-//  main.cpp
-//  OS_proj2
-//
-//  Created by cpsc on 3/9/21.
-// removing certain characters from a string
-// https://www.tutorialspoint.com/how-to-remove-certain-characters-from-a-string-in-cplusplus
-// mutex
-// https://www.bogotobogo.com/cplusplus/multithreading_pthread.php
-// fix void
-// https://stackoverflow.com/questions/22751762/how-to-make-compiler-not-show-int-to-void-pointer-cast-warnings
+// Names: Clarisse Bonang, Lisa Pham, Macy Werner
+// Email: bonang@chapman.edu, thupham@chapman.edu, mwerner@chapman.edu
+// Course: CPSC 380-01
+// Assignment: Project 2 Sudoku Validator Program
 
 #include <iostream>
 #include <pthread.h>
