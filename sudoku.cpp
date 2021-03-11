@@ -190,7 +190,7 @@ void ReadFile(string fileName)
 
 int main(int argc, const char * argv[]) {
   string fileName = "";
-  fileName = "Testfile1.txt";
+  fileName = "Testfile5.txt";
 
   pthread_t rowThread;
   pthread_t columnThread;

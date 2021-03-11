@@ -36,6 +36,7 @@ The **sudoku.cpp** program:
 * *https://www.tutorialspoint.com/how-to-remove-certain-characters-from-a-string-in-cplusplus*
 * *https://www.bogotobogo.com/cplusplus/multithreading_pthread.php*
 * *https://stackoverflow.com/questions/22751762/how-to-make-compiler-not-show-int-to-void-pointer-cast-warnings*
+* *https://www.geeksforgeeks.org/sudoku-backtracking-7/*
 
 ## Known Errors
 * No known errors.
