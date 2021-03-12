@@ -9,6 +9,7 @@
 #include <iostream>
 #include <pthread.h>
 #include <fstream>
+#include <sstream>
 #include <cstring>
 #include <stdlib.h>     /* atoi */
 #include <map>
@@ -137,10 +138,17 @@ void *checkGrids(void *tRowID)
 // updates the array
 void myArray(string line)
 {
+  int convertedInt;
   for(int col = 0; col < line.length(); col++)
   {
+    if (sudokuArray[countRow][col] != ','){
+      stringstream convertString;
+      convertString << sudokuArray[countRow][col];
+      convertString >> convertedInt;
+    }
     // assign and convert character to number
-    sudokuArray[countRow][col] = line[col] - 48;
+    //nt x = stoi(sudokuArray[countRow][col]);
+    //sudokuArray[countRow][col] = line[col] - 48;
   }
   countRow++;
   //Diag:
@@ -165,6 +173,7 @@ void ReadFile(string fileName)
   // check when the row stops!! (Recall : array[i][j] where i is the row and j is the column. So, make sure that once you hit the end of the row, increment the i.
   // assign grid to global variable: g_sudokuArray
 
+
   ifstream fileInput;
   string line = "";
   fileInput.open(fileName);
@@ -176,10 +185,12 @@ void ReadFile(string fileName)
     while(!fileInput.eof())
     {
       fileInput >> line;
+      //line.erase(remove(line.begin(), line.end(), ','), line.end());
+
       // Diag:
       //cout << "line " << line << endl;
       // Removes ',' from the string
-      line.erase(remove(line.begin(), line.end(), ','), line.end());
+      //line.erase(remove(line.begin(), line.end(), ','), line.end());
       // Passes string that excludes ','
       myArray(line);
 
