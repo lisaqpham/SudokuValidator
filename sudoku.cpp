@@ -19,12 +19,30 @@ using namespace std;
 // mutex lock - allows us to aquire one thread at a time, synchronizing data
 // pthread_mutex_t myMutex; // will use this later
 int sudokuArray[9][9] = {};
+int zeroArray[9][9]={};
 int countRow = 0;
 
+
+
 // Check errors in individual row
-void checkRow(int row)
+void checkRow(int row, int col)
 {
+  //needs to take in exact position
+  //now just checking through row to match position
+  /*bool noDuplicates = true;
   int curr_row = row;
+  int curr_col = col;
+
+  for (int i = 1; i <= 9; i++){
+    if ( sudokuArray[curr_row][curr_col + i] != sudokuArray[curr_row][curr_col] ){
+      noDuplicates = true;
+    }else{
+      noDuplicates = false;
+    }
+  }*/
+
+  //old work
+  /*int curr_row = row;
   map<int, string> rOccupied;
   for (int col = 0; col < 9; col++)
   {
@@ -43,13 +61,27 @@ void checkRow(int row)
       cout << sudokuArray[curr_row][col] << endl;
     }
 
-  }
+  }*/
 }
 
 // Check errors in individual column
-void checkColumn(int col)
+void checkColumn(int row, int col)
 {
+
+  /*bool noDuplicates = true;
+  int curr_row = row;
   int curr_col = col;
+
+  for (int i = 1; i <= 9; i++){
+    if ( sudokuArray[curr_row + i][curr_col] != sudokuArray[curr_row][curr_col] ){
+      noDuplicates = true;
+    }else{
+      noDuplicates = false;
+    }
+  }*/
+
+  //old work
+  /*int curr_col = col;
   map<int, string> cOccupied;
   for (int row = 0; row < 9; row++)
   {
@@ -67,13 +99,42 @@ void checkColumn(int col)
       cout << "Row: " << row + 1 << " Column: " << curr_col + 1 << " Value: " ;
       cout << sudokuArray[row][curr_col] << endl;
     }
-  }
+  }*/
 }
 
 // Check errors in individual sub-grids
-void checkGrid(int rgrid, int cgrid)
+void checkGrid(int row, int col)
 {
-  map<int, string> gOccupied;
+  /*bool noDuplicates = true;
+  int curr_row = row;
+  int curr_col = col;
+
+  for (int i = 1; i <= 3; i++){
+    if ( sudokuArray[curr_row][curr_col + 1] != sudokuArray[curr_row][curr_col] ){
+      noDuplicates = true;
+    }else{
+      noDuplicates = false;
+    }
+  }
+  for (int i = 1; i <= 3; i++){
+    if ( sudokuArray[curr_row + 1][curr_col + i] != sudokuArray[curr_row][curr_col] ){
+      noDuplicates = true;
+    }else{
+      noDuplicates = false;
+    }
+  }
+  for (int i = 1; i <= 3; i++){
+    if ( sudokuArray[curr_row + 2][curr_col + i] != sudokuArray[curr_row][curr_col] ){
+      noDuplicates = true;
+    }else{
+      noDuplicates = false;
+    }
+  }*/
+  //could do a for loop in a for loop instead of three for loops
+
+  //old work
+
+  /*map<int, string> gOccupied;
 
   for (int r = 0; r < 3; r++) // row
   {
@@ -93,7 +154,7 @@ void checkGrid(int rgrid, int cgrid)
         cout << sudokuArray[r + rgrid][c + cgrid] << endl;
       }
     }
-  }
+  }*/
 }
 
 // Checks all Rows
@@ -134,6 +195,26 @@ void *checkGrids(void *tRowID)
   }
   return NULL;
 }
+
+//make new array with x
+/*void findErrors(){
+  for (int i = 0; i < 9; i++)
+  {
+    for(int j = 0; j < 9; j++)
+    {
+      int x = sudokuArray[i][j];
+      if (checkRow(i,j) == false){
+        zeroArray[i][j] = 0;
+      }else if (checkColumn(i,j) == false) {
+        zeroArray[i][j] = 0;
+      }else if (checkGrid(i,j) == false){
+        zeroArray[i][j] = 0;
+      }else{
+        zeroArray[i][j] = x;
+      }
+    }
+  }
+}*/
 
 // updates the array
 void myArray(string line)
