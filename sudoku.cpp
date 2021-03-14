@@ -1,11 +1,11 @@
-// Sudoku Validator Program
-// The Sudoku Validator Program (SVP) shall validate a 9x9 completed puzzle for correctness.
 //
-// Names: Clarisse Bonang, Lisa Pham, Macy Werner
-// Email: bonang@chapman.edu, thupham@chapman.edu, mwerner@chapman.edu
-// Course: CPSC 380-01
-// Assignment: Project 2 Sudoku Validator Program
-
+//  main.cpp
+//  mutexLock
+//
+//  Created by cpsc on 3/11/21.
+//
+//#include <unistd.h.>
+// https://dzone.com/articles/how-can-we-controlschedule-execution-of-threads-in
 #include <iostream>
 #include <pthread.h>
 #include <fstream>
@@ -13,128 +13,220 @@
 #include <stdlib.h>     /* atoi */
 #include <map>
 using namespace std;
-
-// NOTE: may need later?
-// mutex lock - allows us to aquire one thread at a time, synchronizing data
-// pthread_mutex_t myMutex; // will use this later
 int sudokuArray[9][9] = {};
+int zeroArray[9][9]={};
 int countRow = 0;
+int controller = 0;
+void findErrors();
+void printmyArray(int arr[][9], int size);
+bool checkRow(int row, int col);
+bool checkColumn(int row, int col);
 
-// Check errors in individual row
-void checkRow(int row)
+void * checkRows(void *arg)
 {
+    int x = 0;
+  while(1)
+  {
+    if(controller == 0){
+      // findErrors();
+      for (int i = 0; i < 9; i++)
+      {
+        for(int j = 0; j < 9; j++)
+        {
+          x = sudokuArray[i][j];
+          if (checkRow(i,j) == false){
+            zeroArray[i][j] = 0;
+          }
+          else{
+              // temporary: b/f it was = x
+            zeroArray[i][j] = 1;
+          }
+           
+        }
+      }
+        // Diag: check if the grid includes corrections
+        printmyArray(zeroArray, 9);
+    }
+      break;
+  }
+    cout << "check rows\n" << endl;
+  controller = 1;
+  pthread_exit(NULL);
+}
+
+void * checkCols(void *arg)
+{
+  while(1)
+  {
+    if(controller == 1){
+      int x = 0;
+      for (int i = 0; i < 9; i++)
+      {
+        for(int j = 0; j < 9; j++)
+        {
+          x = sudokuArray[i][j];
+          if (checkColumn(i,j) == false)
+          {
+             zeroArray[i][j] = 0;
+          }
+          else
+          {
+            // temporary: b/f it was = x
+            zeroArray[i][j] = 1;
+          }
+        }
+      }
+        // Diag: check if the grid includes corrections
+      printmyArray(zeroArray, 9);
+      break;
+    }
+  }
+  cout << "check columns\n"<< endl;
+  controller = 2;
+  pthread_exit(NULL);
+}
+
+void * checkGrids(void *arg)
+{
+  while(1)
+  {
+    if(controller == 2)
+      break;
+  }
+    cout << "check grids\n" << endl;
+  controller = 0;
+  pthread_exit(NULL);
+}
+
+bool checkRow(int row, int col)
+{
+    //needs to take in exact position
+      //now just checking through row to match position
+      bool noDuplicates = true;
+      int curr_row = row;
+      int curr_col = col;
+    // if the column is at position 8
+  for (int i = 0; i <= 8; i++){
+    
+    if ( sudokuArray[curr_row][i] !=  sudokuArray[curr_row][curr_col])
+        {
+          noDuplicates = true;
+        }
+      // check if it reaches
+    else if (i == curr_col)
+    {
+        noDuplicates = true;
+    }
+    else{
+          noDuplicates = false;
+          break;
+        }
+      }
+    return noDuplicates;
+}
+
+bool checkColumn(int row, int col)
+{
+  bool noDuplicates = true;
   int curr_row = row;
-  map<int, string> rOccupied;
-  for (int col = 0; col < 9; col++)
-  {
-    // check if the key exists
-    if(rOccupied.find(sudokuArray[curr_row][col]) == rOccupied.end())
-    {
-      // cout << "Not Occupied" << endl;
-      // cout << "Adding to map" << endl;
-      rOccupied[sudokuArray[curr_row][col]] = "Occupied";
-    }
-    else
-    {
-      // cout << "Occupied" << endl;
-      // Specs: wants the row and colum to start at 1
-      cout << "Row: " << curr_row + 1 << " Column: " << col + 1 << " Value: " ;
-      cout << sudokuArray[curr_row][col] << endl;
-    }
-
-  }
-}
-
-// Check errors in individual column
-void checkColumn(int col)
-{
   int curr_col = col;
-  map<int, string> cOccupied;
-  for (int row = 0; row < 9; row++)
-  {
-    // check if the key exists
-    if(cOccupied.find(sudokuArray[row][curr_col]) == cOccupied.end())
+    if(zeroArray[curr_row][curr_col] == 0){
+        return noDuplicates = false;
+    }
+    else{
+      for (int i = 0; i <= 8; i++){
+        if ( sudokuArray[i][curr_col] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }
+        else if (i == curr_row)
+        {
+            noDuplicates = true;
+        }
+        else
+        {
+          noDuplicates = false;
+            break;
+        }
+      }
+        return noDuplicates;
+    }
+}
+
+bool checkGrid(int row, int col)
+{
+  bool noDuplicates = true;
+  int curr_row = row;
+  int curr_col = col;
+  for (int i = 1; i <= 3; i++){
+      // if the curr_col is 1,4,7 then add ( [curr_col + i])
+      // if the curr_col is 3,6,9 then subtract ([curr_col - i]
+      // if the curr_col is 2,5,8 then add one and subtract 1 [col + i] [col - i]
+      // do something similar to the rows
+    if ( sudokuArray[curr_row][i] != sudokuArray[curr_row][curr_col] )
     {
-      // cout << "Not Occupied" << endl;
-      // cout << "Adding to map" << endl;
-      cOccupied[sudokuArray[row][curr_col]] = "Occupied";
+      noDuplicates = true;
     }
     else
     {
-      // cout << "Occupied" << endl;
-      // Specs: wants the row and colum to start at 1
-      cout << "Row: " << row + 1 << " Column: " << curr_col + 1 << " Value: " ;
-      cout << sudokuArray[row][curr_col] << endl;
+      noDuplicates = false;
     }
   }
-}
-
-// Check errors in individual sub-grids
-void checkGrid(int rgrid, int cgrid)
-{
-  map<int, string> gOccupied;
-
-  for (int r = 0; r < 3; r++) // row
-  {
-    for (int c = 0; c < 3; c++) // col
+  for (int i = 1; i <= 3; i++){
+    if ( sudokuArray[curr_row + 1][curr_col + i] != sudokuArray[curr_row][curr_col] )
     {
-      if(gOccupied.find(sudokuArray[r + rgrid][c + cgrid]) == gOccupied.end())
-      {
-        // cout << "Not Occupied" << endl;
-        // cout << "Adding to map" << endl;
-        gOccupied[sudokuArray[r + rgrid][c + cgrid]] = "Occupied";
-      }
-      else
-      {
-        // cout << "Occupied" << endl;
-        // Specs: wants the row and colum to start at 1
-        cout << "Row: " << r + rgrid + 1 << " Column: " << c + cgrid + 1 << " Value: " ;
-        cout << sudokuArray[r + rgrid][c + cgrid] << endl;
-      }
+      noDuplicates = true;
     }
-  }
-}
-
-// Checks all Rows
-void *checkRows(void *tRowID)
-{
-  int rowLine = 0;
-
-  while (rowLine < 9)
-  {
-    checkRow(rowLine);
-    rowLine++;
-  }
-  return NULL;
-}
-
-// Checks all Columns
-void *checkColumns(void *tColID)
-{
-  int colLine = 0;
-
-  while (colLine < 9)
-  {
-    checkColumn(colLine);
-    colLine++;
-  }
-  return NULL;
-}
-
-// Checks all Grids
-void *checkGrids(void *tRowID)
-{
-  for (int i = 0; i < 9; i += 3)
-  {
-    for (int j = 0; j < 9; j += 3)
+    else
     {
-      checkGrid(i,j);
+      noDuplicates = false;
     }
   }
-  return NULL;
+  for (int i = 1; i <= 3; i++){
+    if ( sudokuArray[curr_row + 2][curr_col + i] != sudokuArray[curr_row][curr_col] )
+    {
+      noDuplicates = true;
+    }
+    else
+    {
+      noDuplicates = false;
+    }
+  }
+    return noDuplicates;
 }
 
-// updates the array
+//make new array with x
+void findErrors(){
+    int x = 0;
+  for (int i = 0; i < 9; i++)
+  {
+    for(int j = 0; j < 9; j++)
+    {
+      x = sudokuArray[i][j];
+      if (checkRow(i,j) == false){
+        zeroArray[i][j] = 0;
+      }
+      //else if (checkColumn(i,j) == false) {
+         // zeroArray[i][j] = 0;
+      //}
+        /*
+      else if (checkGrid(i,j) == false){
+        zeroArray[i][j] = 0;
+      }
+       */
+      else{
+          // temporary: b/f it was = x
+        zeroArray[i][j] = 1;
+      }
+       
+    }
+  }
+    // Diag: check if the grid includes corrections
+    printmyArray(zeroArray, 9);
+    
+}
+
+
+//myArray(): updates the array after reading from file
 void myArray(string line)
 {
   for(int col = 0; col < line.length(); col++)
@@ -143,28 +235,23 @@ void myArray(string line)
     sudokuArray[countRow][col] = line[col] - 48;
   }
   countRow++;
-  //Diag:
-  //cout << "row: " << countRow << endl;
 }
-// prints the array
-void printmyArray()
+
+//printmyArray(): prints the array
+void printmyArray(int arr[][9], int size)
 {
-  for (int i = 0; i < 9; i++)
+  for (int i = 0; i < size; i++)
   {
-    for(int j = 0; j < 9; j++)
+    for(int j = 0; j < size; j++)
     {
-      cout << sudokuArray[i][j] << " \n"[j == 8];
+      cout << arr[i][j] << " \n"[j == 8];
     }
   }
 }
+
+//ReadFile(): reads from file
 void ReadFile(string fileName)
 {
-  // read from file
-  // Beware:
-  // make sure to only pass in integers
-  // check when the row stops!! (Recall : array[i][j] where i is the row and j is the column. So, make sure that once you hit the end of the row, increment the i.
-  // assign grid to global variable: g_sudokuArray
-
   ifstream fileInput;
   string line = "";
   fileInput.open(fileName);
@@ -182,86 +269,33 @@ void ReadFile(string fileName)
       line.erase(remove(line.begin(), line.end(), ','), line.end());
       // Passes string that excludes ','
       myArray(line);
-
     }
   }
-  printmyArray();
+  printmyArray(sudokuArray, 9);
 }
 
-int main(int argc, const char * argv[]) {
+int main(int argc, const char * argv[])
+{
+  pthread_t tid1, tid2, tid3;
   string fileName = "";
-  fileName = "Testfile1.txt";
-
-  pthread_t rowThread;
-  pthread_t columnThread;
-  pthread_t gridThread;
-
-  cout << "---------------------------------------------" << endl;
-  cout << "Sudoku Validator Program" << endl;
-  cout << "File Name: " << fileName << endl << endl;
+  fileName = "Testfile5.txt";
+  printf("Sudoku Validator Program");
+  cout << "File Name: " << fileName << endl;
   ReadFile(fileName);
-
-  int rowID = 1;
-  int colID = 2;
-  int gridID = 3;
-
-  cout << "\nErrors Found:" << endl;
-
-  pthread_create(&rowThread, NULL, checkRows, (void *)(size_t)rowID);
-  pthread_create(&columnThread, NULL, checkColumns, (void *)(size_t)colID);
-  pthread_create(&gridThread, NULL, checkGrids, (void *)(size_t)gridID);
-
-  pthread_join(rowThread, NULL);
-  pthread_join(columnThread, NULL);
-  pthread_join(gridThread, NULL);
-
-
-  // STEP 1: Create threads
-
-  // STEP 2: Read from the test file
-  // call ReadFile()
-
-  // STEP 3: Create the threads and call their designated functions
-  // pthread_create(&threads[i], NULL, {inert function name}, (void *)i);
-
-  // STEP 4: Check the row
-  // checkRows
-  // while loop
-  // call check Row
-  // checkRow
-  // check if the row has any duplicates
-
-  // STEP 5: Check the column
-  // checkColumns
-  // while loop
-  // call check Column
-  // checkColumn
-  // check if the row has any duplicates
-
-
-  cout << endl;
-  return 0;
+    
+    
+  printf("Before creating the threads\n");
+  if( pthread_create(&tid1, NULL, checkRows, NULL) != 0 )
+        printf("Failed to create thread1\n");
+  if( pthread_create(&tid2, NULL, checkCols, NULL) != 0 )
+        printf("Failed to create thread2\n");
+   //usleep(3);
+  if( pthread_create(&tid3, NULL, checkGrids, NULL) != 0 )
+        printf("Failed to create thread3\n");
+ 
+  pthread_join(tid1,NULL);
+  pthread_join(tid2,NULL);
+  pthread_join(tid3,NULL);
+  //usleep(10);
+ exit(0);
 }
-
-
-
-/*
-Meeting Notes:
-
-// Create 3 threads
-// Create 3 functions
-// Create a function that reads in the file and assign the 2 dimensional array
-// never going to write to it, just read from it
-// g_sudokuArray[9][9]
-// when parsing through the file, check when the row stops
-// makes sure it is a integer: 1-9
-//
-
-// Create a 2D array global variable
-
-// Create a function to read from the file
-// global variable
-// g_sudokuArray[9][9]
-
-
-*/
