@@ -21,6 +21,7 @@ void findErrors();
 void printmyArray(int arr[][9], int size);
 bool checkRow(int row, int col);
 bool checkColumn(int row, int col);
+bool checkGrid(int row, int col);
 
 void * checkRows(void *arg)
 {
@@ -41,7 +42,7 @@ void * checkRows(void *arg)
               // temporary: b/f it was = x
             zeroArray[i][j] = 1;
           }
-           
+
         }
       }
         // Diag: check if the grid includes corrections
@@ -107,7 +108,7 @@ bool checkRow(int row, int col)
       int curr_col = col;
     // if the column is at position 8
   for (int i = 0; i <= 8; i++){
-    
+
     if ( sudokuArray[curr_row][i] !=  sudokuArray[curr_row][curr_col])
         {
           noDuplicates = true;
@@ -154,44 +155,149 @@ bool checkColumn(int row, int col)
 
 bool checkGrid(int row, int col)
 {
+  // if the curr_col is 1,4,7 then add ( [curr_col + i])
+  // if the curr_col is 3,6,9 then subtract ([curr_col - i]
+  // if the curr_col is 2,5,8 then add one and subtract 1 [col + i] [col - i]
+  // do something similar to the rows
   bool noDuplicates = true;
   int curr_row = row;
   int curr_col = col;
-  for (int i = 1; i <= 3; i++){
-      // if the curr_col is 1,4,7 then add ( [curr_col + i])
-      // if the curr_col is 3,6,9 then subtract ([curr_col - i]
-      // if the curr_col is 2,5,8 then add one and subtract 1 [col + i] [col - i]
-      // do something similar to the rows
-    if ( sudokuArray[curr_row][i] != sudokuArray[curr_row][curr_col] )
-    {
-      noDuplicates = true;
+
+  if (curr_col == 0 || curr_col == 3 || curr_col == 6){
+    if(curr_row == 0 || curr_row == 3 || curr_row == 6){
+      for (int i = 0; i <= 2; i++){
+        if ( sudokuArray[curr_row + i][curr_col + i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ((curr_row + i) == curr_row && (curr_col + i) == curr_col){
+            noDuplicates = true;
+        }else{
+          noDuplicates = false;
+            break;
+        }
+      }
+        return noDuplicates;
+    }else if (curr_row == 2 || curr_row == 5 || curr_row == 8){
+      for (int i = 0; i <= 2; i++){
+        if ( sudokuArray[curr_row - i][curr_col + i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ((curr_row - i) == curr_row && (curr_col + i) == curr_col){
+            noDuplicates = true;
+        }else{
+          noDuplicates = false;
+            break;
+        }
+      }
+        return noDuplicates;
+    }else{
+      for (int i = 0; i <= 2; i++){
+        if ( sudokuArray[curr_row - 1][curr_col + i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if( sudokuArray[curr_row][curr_col + i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ( sudokuArray[curr_row + 1][curr_col + i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ((curr_col + i) == curr_col){
+            noDuplicates = true;
+        }else{
+          noDuplicates = false;
+            break;
+        }
+      }
+        return noDuplicates;
     }
-    else
-    {
-      noDuplicates = false;
+  }else if (curr_col == 2 || curr_col == 5 || curr_col == 8){
+    if(curr_row == 0 || curr_row == 3 || curr_row == 6){
+      for (int i = 0; i <= 2; i++){
+        if ( sudokuArray[curr_row + i][curr_col - i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ((curr_row + i) == curr_row && (curr_col - i) == curr_col){
+            noDuplicates = true;
+        }else{
+          noDuplicates = false;
+            break;
+        }
+      }
+        return noDuplicates;
+    }else if (curr_row == 2 || curr_row == 5 || curr_row == 8){
+      for (int i = 0; i <= 2; i++){
+        if ( sudokuArray[curr_row - i][curr_col - i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ((curr_row - i) == curr_row && (curr_col - i) == curr_col){
+            noDuplicates = true;
+        }else{
+          noDuplicates = false;
+            break;
+        }
+      }
+        return noDuplicates;
+    }else{
+      for (int i = 0; i <= 2; i++){
+        if ( sudokuArray[curr_row - 1][curr_col - i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if( sudokuArray[curr_row][curr_col - i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ( sudokuArray[curr_row + 1][curr_col - i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ((curr_col + i) == curr_col){
+            noDuplicates = true;
+        }else{
+          noDuplicates = false;
+            break;
+        }
+      }
+        return noDuplicates;
+    }
+  }else{
+    if(curr_row == 0 || curr_row == 3 || curr_row == 6){
+      for (int i = 0; i <= 2; i++){
+        if ( sudokuArray[curr_row + i][curr_col - 1] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if( sudokuArray[curr_row + i][curr_col] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ( sudokuArray[curr_row + i][curr_col + 1] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ((curr_row + i) == curr_row){
+            noDuplicates = true;
+        }else{
+          noDuplicates = false;
+            break;
+        }
+      }
+        return noDuplicates;
+    }else if (curr_row == 2 || curr_row == 5 || curr_row == 8){
+      for (int i = 0; i <= 2; i++){
+        if ( sudokuArray[curr_row - i][curr_col - 1] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if( sudokuArray[curr_row - i][curr_col] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ( sudokuArray[curr_row - i][curr_col + 1] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ((curr_row + i) == curr_row){
+            noDuplicates = true;
+        }else{
+          noDuplicates = false;
+            break;
+        }
+      }
+        return noDuplicates;
+    }else{
+      for (int i = 0; i <= 2; i++){
+        if ( sudokuArray[(curr_row - 1) + i][(curr_col - 1) + i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if( sudokuArray[(curr_row) + i][(curr_col) + i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ( sudokuArray[(curr_row + 1) + i][(curr_col + 1) + i] != sudokuArray[curr_row][curr_col] ){
+          noDuplicates = true;
+        }else if ((curr_row + i) == curr_row && (curr_row + i) == curr_row){
+          noDuplicates = true;
+        }else{
+          noDuplicates = false;
+          break;
+        }
+      }
+        return noDuplicates;
     }
   }
-  for (int i = 1; i <= 3; i++){
-    if ( sudokuArray[curr_row + 1][curr_col + i] != sudokuArray[curr_row][curr_col] )
-    {
-      noDuplicates = true;
-    }
-    else
-    {
-      noDuplicates = false;
-    }
-  }
-  for (int i = 1; i <= 3; i++){
-    if ( sudokuArray[curr_row + 2][curr_col + i] != sudokuArray[curr_row][curr_col] )
-    {
-      noDuplicates = true;
-    }
-    else
-    {
-      noDuplicates = false;
-    }
-  }
-    return noDuplicates;
 }
 
 //make new array with x
@@ -217,12 +323,12 @@ void findErrors(){
           // temporary: b/f it was = x
         zeroArray[i][j] = 1;
       }
-       
+
     }
   }
     // Diag: check if the grid includes corrections
     printmyArray(zeroArray, 9);
-    
+
 }
 
 
@@ -282,8 +388,8 @@ int main(int argc, const char * argv[])
   printf("Sudoku Validator Program");
   cout << "File Name: " << fileName << endl;
   ReadFile(fileName);
-    
-    
+
+
   printf("Before creating the threads\n");
   if( pthread_create(&tid1, NULL, checkRows, NULL) != 0 )
         printf("Failed to create thread1\n");
@@ -292,7 +398,7 @@ int main(int argc, const char * argv[])
    //usleep(3);
   if( pthread_create(&tid3, NULL, checkGrids, NULL) != 0 )
         printf("Failed to create thread3\n");
- 
+
   pthread_join(tid1,NULL);
   pthread_join(tid2,NULL);
   pthread_join(tid3,NULL);
