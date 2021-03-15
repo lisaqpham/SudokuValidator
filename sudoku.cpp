@@ -16,6 +16,7 @@ bool checkRow(int row, int col);
 bool checkColumn(int row, int col);
 bool checkGrid(int row, int col);
 map<pair<int,int>, int> rcgMap;
+map<pair<int,int>, int> fixedMap;
 
 void * checkRows(void *arg) {
   int x = 0;
@@ -225,6 +226,13 @@ void printRCG() {
   }
 }
 
+void printFixed() {
+  cout << "CORRECT SOLUTIONS" << endl;
+  for(map<pair<int,int>, int>::const_iterator it = fixedMap.begin(); it != fixedMap.end(); ++it) {
+      cout << "Row: " << (it->first.first) + 1 << "    Column: " << (it->first.second) + 1 << "    Correct Value: " << it->second << endl;
+  }
+}
+
 bool isValid(int val, int row, int col) {
   bool valid = true;
 
@@ -272,25 +280,25 @@ bool backtracking() {
     if (isValid(i, r, c)) {
       sudokuArray[r][c] = i;
       pair<int,int> pos(r,c);
+      fixedMap[pos] = i;
       rcgMap.erase(pos);
       if (backtracking()) {
         return true;
       }
-
+      fixedMap.erase(pos);
       rcgMap[pos] = 3;
     }
   }
   return false;
 }
 
-
-
 int main(int argc, const char * argv[]) {
   pthread_t tid1, tid2, tid3;
   string fileName = "";
   fileName = "Testfile5.txt";
   cout<< "\nSudoku Validator Program" << endl;
-  cout << "File Name: " << fileName << endl << endl;
+  cout << "File Name: " << fileName << endl;
+  cout << "\nGIVEN BOARD" << endl;
   readFile(fileName);
   cout << endl;
 
@@ -306,11 +314,13 @@ int main(int argc, const char * argv[]) {
   pthread_join(tid1,NULL);
   pthread_join(tid2,NULL);
   pthread_join(tid3,NULL);
-  //usleep(10);
+
   eraseNonRCG();
   backtracking();
-  cout << endl;
+  printFixed();
+  cout << "\nVALIDATED BOARD" << endl;
   printmyArray(sudokuArray, 9);
+  cout << endl;
 
- exit(0);
+  exit(0);
 }
