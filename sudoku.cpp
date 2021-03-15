@@ -286,13 +286,16 @@ void printFixed() {
 // MAIN FUNCTION
 
 int main(int argc, const char * argv[]) {
-  
   pthread_t tid1, tid2, tid3;
-  string fileName = "";
-  fileName = "Testfile5.txt";
+  string fileName = "Testfile1.txt";
 
-  cout<< "\n---------Sudoku Validator Program---------" << endl;
-  cout << "\nFile Name: " << fileName << endl;
+  cout<< "\n---------Sudoku Validator Program---------" << endl << endl;
+
+  cout << "<A default file will be used if no input is specified.>" << endl << endl;
+  cout << "Please input a file name: ";
+  cin >> fileName;
+
+  cout << "\nFile Used: " << fileName << endl;
   cout << "\nGIVEN BOARD\n" << endl;
   readFile(fileName);
   cout << endl;
