@@ -209,15 +209,86 @@ void readFile(string fileName) {
   printmyArray(sudokuArray, 9);
 }
 
-void backtracking() {
-  pair<int, int> coordinate(0,0);
-  cout << rcgMap[coordinate] << endl;
+void eraseNonRCG() {
+  for (auto it = rcgMap.cbegin(); it != rcgMap.cend() /* not hoisted */; /* no increment */) {
+    if (it->second != 3) {
+      rcgMap.erase(it++);    // or "it = m.erase(it)" since C++11
+    } else {
+      ++it;
+    }
+  }
 }
+
+void printRCG() {
+  for(map<pair<int,int>, int>::const_iterator it = rcgMap.begin(); it != rcgMap.end(); ++it) {
+      cout << "(" << it->first.first << "," << it->first.second << ")" << it->second << endl;
+  }
+}
+
+bool isValid(int val, int row, int col) {
+  bool valid = true;
+
+  // check row
+  for (int c = 0; c < 9; c++) {
+    if (sudokuArray[row][c] == val && c != col) {
+      return false;
+    }
+  }
+
+  // check column
+  for (int r = 0; r < 9; r++) {
+    if (sudokuArray[r][col] == val && r != row) {
+      return false;
+    }
+  }
+
+  // check grid
+  for (int rg = 0; rg < 3; rg++) {
+    for (int cg = 0; cg < 3; cg++) {
+      if (sudokuArray[rg + row - (row % 3)][cg + col - (col % 3)] == val && ((rg + row - (row % 3)) != row) && ((cg + col - (col % 3)) != col)) {
+        return false;
+      }
+    }
+  }
+
+  return valid;
+}
+
+bool backtracking() {
+  int r;
+  int c;
+
+  if (rcgMap.size() == 0) {
+    return true;
+  } else {
+    for(map<pair<int,int>, int>::const_iterator it = rcgMap.begin(); it != rcgMap.end(); ++it) {
+      r = it->first.first;
+      c = it->first.second;
+      break;
+    }
+  }
+
+  for (int i = 1; i <= 9; i++) {
+    if (isValid(i, r, c)) {
+      sudokuArray[r][c] = i;
+      pair<int,int> pos(r,c);
+      rcgMap.erase(pos);
+      if (backtracking()) {
+        return true;
+      }
+
+      rcgMap[pos] = 3;
+    }
+  }
+  return false;
+}
+
+
 
 int main(int argc, const char * argv[]) {
   pthread_t tid1, tid2, tid3;
   string fileName = "";
-  fileName = "Testfile4.txt";
+  fileName = "Testfile5.txt";
   cout<< "\nSudoku Validator Program" << endl;
   cout << "File Name: " << fileName << endl << endl;
   readFile(fileName);
@@ -236,6 +307,10 @@ int main(int argc, const char * argv[]) {
   pthread_join(tid2,NULL);
   pthread_join(tid3,NULL);
   //usleep(10);
+  eraseNonRCG();
+  backtracking();
+  cout << endl;
+  printmyArray(sudokuArray, 9);
 
  exit(0);
 }
