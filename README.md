@@ -32,11 +32,14 @@ The **sudoku.cpp** program:
 * Testfile5.txt
 
 ## References
+* *https://www.geeksforgeeks.org/pair-in-cpp-stl/*
 * *https://www.geeksforgeeks.org/multithreading-in-cpp/*
-* *https://www.tutorialspoint.com/how-to-remove-certain-characters-from-a-string-in-cplusplus*
-* *https://www.bogotobogo.com/cplusplus/multithreading_pthread.php*
-* *https://stackoverflow.com/questions/22751762/how-to-make-compiler-not-show-int-to-void-pointer-cast-warnings*
 * *https://www.geeksforgeeks.org/sudoku-backtracking-7/*
+* *https://www.geeksforgeeks.org/map-associative-containers-the-c-standard-template-library-stl/*
+* *https://www.bogotobogo.com/cplusplus/multithreading_pthread.php*
+* *https://www.techwithtim.net/tutorials/python-programming/sudoku-solver-backtracking/*
+* *https://www.tutorialspoint.com/how-to-remove-certain-characters-from-a-string-in-cplusplus*
+* *https://stackoverflow.com/questions/22751762/how-to-make-compiler-not-show-int-to-void-pointer-cast-warnings*
 
 ## Known Errors
 * No known errors.
