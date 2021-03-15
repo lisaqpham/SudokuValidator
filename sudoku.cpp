@@ -23,26 +23,20 @@ bool checkRow(int row, int col);
 bool checkColumn(int row, int col);
 bool checkGrid(int row, int col);
 
-void * checkRows(void *arg)
-{
-    int x = 0;
-  while(1)
-  {
-    if(controller == 0){
+void * checkRows(void *arg) {
+  int x = 0;
+  while(1) {
+    if (controller == 0) {
       // findErrors();
-      for (int i = 0; i < 9; i++)
-      {
-        for(int j = 0; j < 9; j++)
-        {
+      for (int i = 0; i < 9; i++) {
+        for(int j = 0; j < 9; j++) {
           x = sudokuArray[i][j];
-          if (checkRow(i,j) == false){
+          if (checkRow(i,j) == false) {
             zeroArray[i][j] = 0;
-          }
-          else{
+          } else {
               // temporary: b/f it was = x
             zeroArray[i][j] = 1;
           }
-
         }
       }
         // Diag: check if the grid includes corrections
@@ -50,34 +44,27 @@ void * checkRows(void *arg)
     }
       break;
   }
-    cout << "check rows\n" << endl;
+  cout << "check rows\n" << endl;
   controller = 1;
   pthread_exit(NULL);
 }
 
-void * checkCols(void *arg)
-{
-  while(1)
-  {
-    if(controller == 1){
+void * checkCols(void *arg) {
+  while(1) {
+    if (controller == 1) {
       int x = 0;
-      for (int i = 0; i < 9; i++)
-      {
-        for(int j = 0; j < 9; j++)
-        {
+      for (int i = 0; i < 9; i++) {
+        for(int j = 0; j < 9; j++) {
           x = sudokuArray[i][j];
-          if (checkColumn(i,j) == false)
-          {
+          if (checkColumn(i,j) == false) {
              zeroArray[i][j] = 0;
-          }
-          else
-          {
+          } else {
             // temporary: b/f it was = x
             zeroArray[i][j] = 1;
           }
         }
       }
-        // Diag: check if the grid includes corrections
+      // Diag: check if the grid includes corrections
       printmyArray(zeroArray, 9);
       break;
     }
@@ -87,230 +74,105 @@ void * checkCols(void *arg)
   pthread_exit(NULL);
 }
 
-void * checkGrids(void *arg)
-{
-  while(1)
-  {
-    if(controller == 2)
+void * checkGrids(void *arg) {
+  while(1) {
+    if (controller == 2) {
+      int x = 0;
+      for (int i = 0; i < 9; i++) {
+        for(int j = 0; j < 9; j++) {
+          x = sudokuArray[i][j];
+          if (checkGrid(i,j) == false) {
+            //cout << "Row: " << i << " Col: " << j << endl;
+            zeroArray[i][j] = 0;
+          } else {
+            // temporary: b/f it was = x
+            zeroArray[i][j] = 1;
+          }
+        }
+      }
+      // Diag: check if the grid includes corrections
+      printmyArray(zeroArray, 9);
       break;
+    }
   }
-    cout << "check grids\n" << endl;
+  cout << "check grids\n" << endl;
   controller = 0;
   pthread_exit(NULL);
 }
 
-bool checkRow(int row, int col)
-{
-    //needs to take in exact position
-      //now just checking through row to match position
-      bool noDuplicates = true;
-      int curr_row = row;
-      int curr_col = col;
-    // if the column is at position 8
-  for (int i = 0; i <= 8; i++){
+bool checkRow(int row, int col) {
+  //needs to take in exact position
+  //now just checking through row to match position
+  bool noDuplicates = true;
+  int curr_row = row;
+  int curr_col = col;
+  // if the column is at position 8
+  for (int i = 0; i <= 8; i++) {
+    if (sudokuArray[curr_row][i] != sudokuArray[curr_row][curr_col]) {
+      noDuplicates = true;
+    } else if (i == curr_col) {    // check if it reaches
+      noDuplicates = true;
+    } else {
+      noDuplicates = false;
+      break;
+    }
+  }
+  return noDuplicates;
+}
 
-    if ( sudokuArray[curr_row][i] !=  sudokuArray[curr_row][curr_col])
-        {
-          noDuplicates = true;
-        }
-      // check if it reaches
-    else if (i == curr_col)
-    {
+bool checkColumn(int row, int col) {
+  bool noDuplicates = true;
+  int curr_row = row;
+  int curr_col = col;
+  if (zeroArray[curr_row][curr_col] == 0) {
+    return noDuplicates = false;
+  } else {
+    for (int i = 0; i <= 8; i++) {
+      if (sudokuArray[i][curr_col] != sudokuArray[curr_row][curr_col]) {
         noDuplicates = true;
-    }
-    else{
-          noDuplicates = false;
-          break;
-        }
+      } else if (i == curr_row) {
+        noDuplicates = true;
+      } else {
+        noDuplicates = false;
+        break;
       }
+    }
     return noDuplicates;
+  }
 }
 
-bool checkColumn(int row, int col)
-{
+bool checkGrid(int row, int col) {
   bool noDuplicates = true;
   int curr_row = row;
   int curr_col = col;
-    if(zeroArray[curr_row][curr_col] == 0){
-        return noDuplicates = false;
-    }
-    else{
-      for (int i = 0; i <= 8; i++){
-        if ( sudokuArray[i][curr_col] != sudokuArray[curr_row][curr_col] ){
+  if (zeroArray[curr_row][curr_col] == 0) {
+    return noDuplicates = false;
+  } else {
+    for (int r = 0; r < 3; r++) {
+      for (int c = 0; c < 3; c++) {
+        if (((r + curr_row - (curr_row % 3)) == curr_row) && (c + curr_col - (curr_col % 3) == curr_col)) {
           noDuplicates = true;
-        }
-        else if (i == curr_row)
-        {
-            noDuplicates = true;
-        }
-        else
-        {
-          noDuplicates = false;
-            break;
-        }
-      }
-        return noDuplicates;
-    }
-}
-
-bool checkGrid(int row, int col)
-{
-  // if the curr_col is 1,4,7 then add ( [curr_col + i])
-  // if the curr_col is 3,6,9 then subtract ([curr_col - i]
-  // if the curr_col is 2,5,8 then add one and subtract 1 [col + i] [col - i]
-  // do something similar to the rows
-  bool noDuplicates = true;
-  int curr_row = row;
-  int curr_col = col;
-
-  if (curr_col == 0 || curr_col == 3 || curr_col == 6){
-    if(curr_row == 0 || curr_row == 3 || curr_row == 6){
-      for (int i = 0; i <= 2; i++){
-        if ( sudokuArray[curr_row + i][curr_col + i] != sudokuArray[curr_row][curr_col] ){
+        } else if (sudokuArray[r + curr_row - (curr_row % 3)][c + curr_col - (curr_col % 3)] != sudokuArray[curr_row][curr_col]) {
           noDuplicates = true;
-        }else if ((curr_row + i) == curr_row && (curr_col + i) == curr_col){
-            noDuplicates = true;
-        }else{
-          noDuplicates = false;
-            break;
-        }
-      }
-        return noDuplicates;
-    }else if (curr_row == 2 || curr_row == 5 || curr_row == 8){
-      for (int i = 0; i <= 2; i++){
-        if ( sudokuArray[curr_row - i][curr_col + i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ((curr_row - i) == curr_row && (curr_col + i) == curr_col){
-            noDuplicates = true;
-        }else{
-          noDuplicates = false;
-            break;
-        }
-      }
-        return noDuplicates;
-    }else{
-      for (int i = 0; i <= 2; i++){
-        if ( sudokuArray[curr_row - 1][curr_col + i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if( sudokuArray[curr_row][curr_col + i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ( sudokuArray[curr_row + 1][curr_col + i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ((curr_col + i) == curr_col){
-            noDuplicates = true;
-        }else{
-          noDuplicates = false;
-            break;
-        }
-      }
-        return noDuplicates;
-    }
-  }else if (curr_col == 2 || curr_col == 5 || curr_col == 8){
-    if(curr_row == 0 || curr_row == 3 || curr_row == 6){
-      for (int i = 0; i <= 2; i++){
-        if ( sudokuArray[curr_row + i][curr_col - i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ((curr_row + i) == curr_row && (curr_col - i) == curr_col){
-            noDuplicates = true;
-        }else{
-          noDuplicates = false;
-            break;
-        }
-      }
-        return noDuplicates;
-    }else if (curr_row == 2 || curr_row == 5 || curr_row == 8){
-      for (int i = 0; i <= 2; i++){
-        if ( sudokuArray[curr_row - i][curr_col - i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ((curr_row - i) == curr_row && (curr_col - i) == curr_col){
-            noDuplicates = true;
-        }else{
-          noDuplicates = false;
-            break;
-        }
-      }
-        return noDuplicates;
-    }else{
-      for (int i = 0; i <= 2; i++){
-        if ( sudokuArray[curr_row - 1][curr_col - i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if( sudokuArray[curr_row][curr_col - i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ( sudokuArray[curr_row + 1][curr_col - i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ((curr_col + i) == curr_col){
-            noDuplicates = true;
-        }else{
-          noDuplicates = false;
-            break;
-        }
-      }
-        return noDuplicates;
-    }
-  }else{
-    if(curr_row == 0 || curr_row == 3 || curr_row == 6){
-      for (int i = 0; i <= 2; i++){
-        if ( sudokuArray[curr_row + i][curr_col - 1] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if( sudokuArray[curr_row + i][curr_col] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ( sudokuArray[curr_row + i][curr_col + 1] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ((curr_row + i) == curr_row){
-            noDuplicates = true;
-        }else{
-          noDuplicates = false;
-            break;
-        }
-      }
-        return noDuplicates;
-    }else if (curr_row == 2 || curr_row == 5 || curr_row == 8){
-      for (int i = 0; i <= 2; i++){
-        if ( sudokuArray[curr_row - i][curr_col - 1] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if( sudokuArray[curr_row - i][curr_col] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ( sudokuArray[curr_row - i][curr_col + 1] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ((curr_row + i) == curr_row){
-            noDuplicates = true;
-        }else{
-          noDuplicates = false;
-            break;
-        }
-      }
-        return noDuplicates;
-    }else{
-      for (int i = 0; i <= 2; i++){
-        if ( sudokuArray[(curr_row - 1) + i][(curr_col - 1) + i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if( sudokuArray[(curr_row) + i][(curr_col) + i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ( sudokuArray[(curr_row + 1) + i][(curr_col + 1) + i] != sudokuArray[curr_row][curr_col] ){
-          noDuplicates = true;
-        }else if ((curr_row + i) == curr_row && (curr_row + i) == curr_row){
-          noDuplicates = true;
-        }else{
+        } else {
           noDuplicates = false;
           break;
         }
       }
-        return noDuplicates;
     }
+    return noDuplicates;
   }
 }
 
 //make new array with x
-void findErrors(){
-    int x = 0;
-  for (int i = 0; i < 9; i++)
-  {
-    for(int j = 0; j < 9; j++)
-    {
+void findErrors() {
+  int x = 0;
+  for (int i = 0; i < 9; i++) {
+    for(int j = 0; j < 9; j++) {
       x = sudokuArray[i][j];
-      if (checkRow(i,j) == false){
+      if (checkRow(i,j) == false) {
         zeroArray[i][j] = 0;
-      }
+      } else {
       //else if (checkColumn(i,j) == false) {
          // zeroArray[i][j] = 0;
       //}
@@ -319,24 +181,20 @@ void findErrors(){
         zeroArray[i][j] = 0;
       }
        */
-      else{
+
           // temporary: b/f it was = x
         zeroArray[i][j] = 1;
       }
-
     }
   }
-    // Diag: check if the grid includes corrections
-    printmyArray(zeroArray, 9);
-
+  // Diag: check if the grid includes corrections
+  printmyArray(zeroArray, 9);
 }
 
 
 //myArray(): updates the array after reading from file
-void myArray(string line)
-{
-  for(int col = 0; col < line.length(); col++)
-  {
+void myArray(string line) {
+  for (int col = 0; col < line.length(); col++) {
     // assign and convert character to number
     sudokuArray[countRow][col] = line[col] - 48;
   }
@@ -344,30 +202,23 @@ void myArray(string line)
 }
 
 //printmyArray(): prints the array
-void printmyArray(int arr[][9], int size)
-{
-  for (int i = 0; i < size; i++)
-  {
-    for(int j = 0; j < size; j++)
-    {
+void printmyArray(int arr[][9], int size) {
+  for (int i = 0; i < size; i++) {
+    for(int j = 0; j < size; j++) {
       cout << arr[i][j] << " \n"[j == 8];
     }
   }
 }
 
 //ReadFile(): reads from file
-void ReadFile(string fileName)
-{
+void ReadFile(string fileName) {
   ifstream fileInput;
   string line = "";
   fileInput.open(fileName);
-  if(!fileInput.is_open())
-  {
+  if (!fileInput.is_open()) {
     cout << "Could not open file."<< endl;
-  }
-  else{
-    while(!fileInput.eof())
-    {
+  } else {
+    while(!fileInput.eof()) {
       fileInput >> line;
       // Diag:
       //cout << "line " << line << endl;
@@ -380,15 +231,13 @@ void ReadFile(string fileName)
   printmyArray(sudokuArray, 9);
 }
 
-int main(int argc, const char * argv[])
-{
+int main(int argc, const char * argv[]) {
   pthread_t tid1, tid2, tid3;
   string fileName = "";
   fileName = "Testfile5.txt";
   printf("Sudoku Validator Program");
   cout << "File Name: " << fileName << endl;
   ReadFile(fileName);
-
 
   printf("Before creating the threads\n");
   if( pthread_create(&tid1, NULL, checkRows, NULL) != 0 )
