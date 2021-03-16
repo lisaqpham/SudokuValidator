@@ -46,6 +46,7 @@ The **sudoku.cpp** program:
 
 ## Build Insructions
 * `g++ sudoku.cpp`
+*  If c++11 is not enabled, execute `g++ -std=c++11 sudoku.cpp`
 
 ## Execution Instructions
 * `./a.out`
