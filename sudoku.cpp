@@ -205,8 +205,16 @@ void readFile(string fileName) {
 
 // eraseNonRCG: Erase errors not present in all three checks (row, column, grid)
 void eraseNonRCG() {
+  int count = 2;
+  for(map<pair<int,int>, int>::const_iterator i = rcgMap.begin(); i != rcgMap.end(); ++i) {
+      if (i->second == 3){
+        count = 3;
+        break;
+      }
+  }
+
   for (auto it = rcgMap.cbegin(); it != rcgMap.cend();) {
-    if (it->second != 3) {
+    if (it->second != count) {
       rcgMap.erase(it++);
     } else {
       ++it;
@@ -269,10 +277,24 @@ bool backtracking() {
         return true;
       }
       fixedMap.erase(pos);
-      rcgMap[pos] = 3;
+      rcgMap[pos] = 2;
     }
   }
   return false;
+}
+
+// replaceErrors: Replaces errors in grid with 0
+void replaceErrors() {
+  for(map<pair<int,int>, int>::const_iterator it = rcgMap.begin(); it != rcgMap.end(); ++it) {
+      sudokuArray[it->first.first][it->first.second] = 0;
+  }
+}
+
+// printRCG: Prints out rcgMap
+void printRCG() {
+  for(map<pair<int,int>, int>::const_iterator it = rcgMap.begin(); it != rcgMap.end(); ++it) {
+      cout << "Row: " << (it->first.first) + 1 << "    Column: " << (it->first.second) + 1 << "    Correct Value: " << it->second << endl;
+  }
 }
 
 // printFixed: Prints out corrected solutions
@@ -314,8 +336,10 @@ int main(int argc, const char * argv[]) {
   cout << "---------------------------------------" << endl << endl;
 
   eraseNonRCG();
+  replaceErrors();
   backtracking();
   printFixed();
+
   cout << "\n---------------------------------------" << endl;
   cout << "\nVALIDATED BOARD\n" << endl;
   printmyArray(sudokuArray, 9);
